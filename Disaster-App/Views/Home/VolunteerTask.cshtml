@@ -1,0 +1,428 @@
+﻿@model Disaster_App.Models.VolunteerTask
+
+@{
+    ViewData["Title"] = "Create Volunteer Task";
+}
+
+<div class="task-container">
+    <div class="task-form">
+        <h1 class="task-title">Create Volunteer Task</h1>
+        <p class="task-subtitle">Assign tasks to volunteers for disaster relief efforts</p>
+
+        <form asp-action="VolunteerTask" class="form">
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h4>Please fix the following errors:</h4>
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-section">
+                <h3 class="section-title">Task Details</h3>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="TaskName" class="form-label">Task Name *</label>
+                        <input asp-for="TaskName" class="form-input" placeholder="Enter task title (e.g., Food Distribution, Shelter Setup, Medical Assistance)" />
+                        <span asp-validation-for="TaskName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="Description" class="form-label">Task Description</label>
+                        <textarea asp-for="Description" class="form-textarea" placeholder="Provide detailed description of the task, requirements, location, and any special instructions..." rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Assignment & Status</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Status" class="form-label">Task Status *</label>
+                        <select asp-for="Status" class="form-input" required>
+                            <option value="Open">Open - Needs Volunteer</option>
+                            <option value="Assigned">Assigned - In Progress</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="AssignedTo" class="form-label">Assign to Volunteer</label>
+                        <select asp-for="AssignedTo" class="form-input" id="volunteerSelect">
+                            <option value="">-- Select a volunteer --</option>
+                        </select>
+                        <span asp-validation-for="AssignedTo" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" asp-for="CreatedAt" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+
+            <div class="form-note">
+                <p>💡 <strong>Note:</strong> Tasks marked as 'Open' will be available for volunteers to pick up. 'Assigned' tasks are currently being worked on.</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Create Task</button>
+                <a href="@Url.Action("VolunteerHome", "Home")" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadVolunteers();
+
+        const form = document.querySelector('form');
+        const taskNameInput = document.getElementById('TaskName');
+        const statusSelect = document.getElementById('Status');
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            if (!taskNameInput.value.trim()) {
+                isValid = false;
+                taskNameInput.style.borderColor = '#ff6b6b';
+                taskNameInput.style.backgroundColor = 'rgba(255, 107, 107, 0.1)';
+                showError(taskNameInput, 'Please enter a task name');
+            } else {
+                taskNameInput.style.borderColor = '#007BFF';
+                taskNameInput.style.backgroundColor = 'white';
+                hideError(taskNameInput);
+            }
+
+            if (!statusSelect.value) {
+                isValid = false;
+                statusSelect.style.borderColor = '#ff6b6b';
+                statusSelect.style.backgroundColor = 'rgba(255, 107, 107, 0.1)';
+                showError(statusSelect, 'Please select a task status');
+            } else {
+                statusSelect.style.borderColor = '#007BFF';
+                statusSelect.style.backgroundColor = 'white';
+                hideError(statusSelect);
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                document.querySelector('.alert-danger')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        });
+
+        taskNameInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.style.borderColor = '#007BFF';
+                this.style.backgroundColor = 'white';
+                hideError(this);
+            }
+        });
+
+        statusSelect.addEventListener('change', function() {
+            if (this.value) {
+                this.style.borderColor = '#007BFF';
+                this.style.backgroundColor = 'white';
+                hideError(this);
+            }
+        });
+    });
+
+    async function loadVolunteers() {
+        try {
+            const response = await fetch('/Home/GetVolunteers');
+            const volunteers = await response.json();
+            const volunteerSelect = document.getElementById('volunteerSelect');
+
+            volunteers.forEach(volunteer => {
+                const option = document.createElement('option');
+                option.value = volunteer.volunteerID;
+                option.textContent = ${volunteer.fullName} - ${volunteer.skills || 'No skills specified'};
+                volunteerSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading volunteers:', error);
+        }
+    }
+
+    function showError(element, message) {
+        hideError(element);
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.style.color = '#ff6b6b';
+        errorElement.style.fontSize = '0.8rem';
+        errorElement.style.marginTop = '5px';
+        errorElement.textContent = message;
+        element.parentNode.appendChild(errorElement);
+    }
+
+    function hideError(element) {
+        const existingError = element.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+    }
+</script>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f6ff;
+    }
+
+    .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #007BFF 0%, #004E9B 100%);
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .task-container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .task-form {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 8px 32px rgba(0, 123, 255, 0.3);
+        border: 1px solid rgba(0, 123, 255, 0.2);
+    }
+
+    .task-title {
+        color: #007BFF;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .task-subtitle {
+        color: #0056b3;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+        padding: 25px;
+        background: #f8fbff;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 123, 255, 0.2);
+    }
+
+    .section-title {
+        color: #0056b3;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #007BFF;
+        padding-bottom: 10px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+    .form-label {
+        display: block;
+        color: #0056b3;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid rgba(0, 123, 255, 0.3);
+        border-radius: 12px;
+        background: white;
+        color: #333;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+    select.form-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23007BFF' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 12px;
+        padding-right: 40px;
+    }
+
+    .form-note {
+        background: rgba(0, 123, 255, 0.05);
+        border: 1px solid rgba(0, 123, 255, 0.2);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 25px 0;
+        color: #0056b3;
+        font-size: 0.9rem;
+    }
+
+        .form-note strong {
+            color: #007BFF;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .submit-button {
+        background: #007BFF;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 180px;
+    }
+
+        .submit-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+
+    .cancel-button {
+        background: white;
+        color: #007BFF;
+        border: 2px solid #007BFF;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        min-width: 180px;
+    }
+
+        .cancel-button:hover {
+            background: #007BFF;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .text-danger, .field-error {
+        color: #ff4d4f !important;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .alert-danger {
+        background: rgba(255, 77, 79, 0.1);
+        border: 1px solid #ff4d4f;
+        color: #ff4d4f;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+        .alert-danger h4 {
+            margin: 0 0 10px 0;
+            color: #ff4d4f;
+        }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .submit-button, .cancel-button {
+            min-width: 100%;
+        }
+
+        .task-form {
+            padding: 30px 20px;
+        }
+
+        .task-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="background-container">
+    <div class="background-overlay"></div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

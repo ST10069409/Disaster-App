@@ -1,0 +1,271 @@
+﻿@model Disaster_App.Models.User
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="register-container">
+    <div class="register-form">
+        <h1 class="register-title">Create Account</h1>
+        <p class="register-subtitle">Join us in making a difference</p>
+
+        <form asp-action="Register" class="form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="FullName" class="form-label">Full Name</label>
+                    <input asp-for="FullName" class="form-input" placeholder="Enter your full name" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input asp-for="Email" class="form-input" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="PasswordHash" class="form-label">Password</label>
+                    <input asp-for="PasswordHash" type="password" class="form-input" placeholder="Create a password" />
+                    <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Phone" class="form-label">Phone Number</label>
+                    <input asp-for="Phone" class="form-input" placeholder="Enter your phone number" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Role" class="form-label">Account Type</label>
+                    <select asp-for="Role" class="form-input">
+                        <option value="">Select your role</option>
+                        <option value="User">General User</option>
+                        <option value="Volunteer">Volunteer</option>
+                        <option value="Admin">Administrator</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="terms-agreement">
+                    <input type="checkbox" required />
+                    I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="register-button">Create Account</button>
+
+            <div class="login-link">
+                <p>Already have an account? <a href="@Url.Action("Login", "Home")" class="login-link-text">Sign in here</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Global styles */
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #0B1A39; /* Dark blue background */
+    }
+
+    .register-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .register-form {
+        background: #112B54; /* Darker blue card */
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .register-title {
+        color: #ffffff;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .register-subtitle {
+        color: #D6EAF8;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        color: #ffffff;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        background: #0B1A39;
+        color: #ffffff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #5DADE2;
+            background: #173664;
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+    select.form-input option {
+        background-color: #0B1A39 !important;
+        color: white !important;
+    }
+
+    .form-options {
+        margin-bottom: 25px;
+    }
+
+    .terms-agreement {
+        color: #D6EAF8;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        line-height: 1.4;
+    }
+
+    .terms-link {
+        color: #5DADE2;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+        .terms-link:hover {
+            color: #3498DB;
+        }
+
+    .register-button {
+        width: 100%;
+        background: #1A73E8; /* Blue button */
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+        .register-button:hover {
+            background: #1557A1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+    .login-link {
+        text-align: center;
+    }
+
+        .login-link p {
+            color: #D6EAF8;
+            margin: 0;
+        }
+
+    .login-link-text {
+        color: #5DADE2;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+        .login-link-text:hover {
+            color: #3498DB;
+        }
+
+    .text-danger {
+        color: #ff6b6b !important;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .register-form {
+            padding: 30px 20px;
+            margin: 10px;
+        }
+
+        .register-title {
+            font-size: 2rem;
+        }
+
+        .terms-agreement {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

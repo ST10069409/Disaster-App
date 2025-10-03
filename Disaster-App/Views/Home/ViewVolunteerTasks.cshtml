@@ -1,0 +1,552 @@
+﻿@model IEnumerable<Disaster_App.Models.VolunteerTask>
+
+@{
+    ViewData["Title"] = "View Volunteer Tasks";
+}
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f6ff;
+    }
+
+    .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #007BFF 0%, #0056b3 100%);
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .tasks-container {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .tasks-content {
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .tasks-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .tasks-title {
+        color: white;
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .tasks-subtitle {
+        color: #e6f0ff;
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-button {
+        background: linear-gradient(135deg, #007BFF, #0056b3);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .action-button.secondary {
+            background: white;
+            color: #007BFF;
+            border: 2px solid #007BFF;
+        }
+
+            .action-button.secondary:hover {
+                background: #e6f0ff;
+            }
+
+    /* Stats Section */
+    .stats-section {
+        margin-bottom: 30px;
+    }
+
+    .table-stats {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        flex-wrap: wrap;
+    }
+
+    .stats-item {
+        text-align: center;
+        padding: 15px 25px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+
+        .stats-item:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+    .stats-label {
+        display: block;
+        color: #003366;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stats-value {
+        display: block;
+        color: #0056b3;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .tasks-table-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #003366;
+        font-size: 0.95rem;
+    }
+
+        .modern-table th {
+            background: #e6f0ff;
+            color: #0056b3;
+            font-weight: bold;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid #cce0ff;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modern-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease;
+        }
+
+        .modern-table tbody tr:hover {
+            background: #f0f6ff;
+        }
+
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .task-id {
+        font-weight: bold;
+        color: #0056b3;
+        font-family: 'Courier New', monospace;
+    }
+
+    .task-name {
+        font-weight: 600;
+        color: #007BFF;
+    }
+
+    .task-description {
+        color: #333;
+        max-width: 200px;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-open {
+        background: rgba(0, 123, 255, 0.1);
+        color: #007BFF;
+        border: 1px solid rgba(0, 123, 255, 0.3);
+    }
+
+    .status-assigned {
+        background: rgba(0, 86, 179, 0.1);
+        color: #0056b3;
+        border: 1px solid rgba(0, 86, 179, 0.3);
+    }
+
+    .status-completed {
+        background: rgba(0, 200, 83, 0.1);
+        color: #00C853;
+        border: 1px solid rgba(0, 200, 83, 0.3);
+    }
+
+    .task-assigned {
+        color: #0056b3;
+    }
+
+    .task-date {
+        color: #555;
+        font-size: 0.9rem;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .action-btn {
+        background: #e6f0ff;
+        border: 1px solid #cce0ff;
+        border-radius: 6px;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        color: #0056b3;
+    }
+
+        .action-btn:hover {
+            background: #cce0ff;
+            transform: scale(1.1);
+        }
+
+    .view-btn:hover {
+        background: rgba(0, 123, 255, 0.2);
+    }
+
+    .edit-btn:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .delete-btn:hover {
+        background: rgba(244, 67, 54, 0.2);
+    }
+
+    .text-muted {
+        color: #999 !important;
+        font-style: italic;
+    }
+
+    .no-tasks {
+        text-align: center;
+        padding: 60px 20px;
+        color: #0056b3;
+    }
+
+    .no-tasks-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .no-tasks h3 {
+        color: #007BFF;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+    }
+
+    .no-tasks p {
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .tasks-container {
+            padding: 20px 10px;
+        }
+
+        .tasks-title {
+            font-size: 2.2rem;
+        }
+
+        .tasks-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .action-button {
+            width: 100%;
+            max-width: 250px;
+            justify-content: center;
+        }
+
+        .table-stats {
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .stats-item {
+            padding: 12px 20px;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .stats-value {
+            font-size: 1.3rem;
+        }
+
+        .tasks-table-container {
+            padding: 20px 15px;
+            overflow-x: auto;
+        }
+
+        .modern-table {
+            font-size: 0.85rem;
+            min-width: 800px;
+        }
+
+            .modern-table th,
+            .modern-table td {
+                padding: 10px 8px;
+            }
+    }
+
+    @@media (max-width: 480px) {
+        .tasks-title {
+            font-size: 1.8rem;
+        }
+
+        .tasks-subtitle {
+            font-size: 1rem;
+        }
+
+        .table-stats {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stats-item {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+</style>
+
+<!-- Background Image Container -->
+<div class="background-container">
+    <div class="background-overlay"></div>
+</div>
+
+<div class="tasks-container">
+    <div class="tasks-content">
+        <div class="tasks-header">
+            <h1 class="tasks-title">Volunteer Tasks</h1>
+            <p class="tasks-subtitle">Manage and monitor all volunteer assignments</p>
+
+            <div class="header-actions">
+                <a href="@Url.Action("VolunteerTask", "Home")" class="action-button">
+                    <span class="button-icon">➕</span>
+                    Create New Task
+                </a>
+                <a href="@Url.Action("VolunteerHome", "Home")" class="action-button secondary">
+                    <span class="button-icon">🏠</span>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="stats-section">
+                <div class="table-stats">
+                    <div class="stats-item">
+                        <span class="stats-label">Total Tasks:</span>
+                        <span class="stats-value">@Model.Count()</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Open:</span>
+                        <span class="stats-value">@Model.Count(t => t.Status == "Open")</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Assigned:</span>
+                        <span class="stats-value">@Model.Count(t => t.Status == "Assigned")</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Completed:</span>
+                        <span class="stats-value">@Model.Count(t => t.Status == "Completed")</span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="tasks-table-container">
+            @if (Model != null && Model.Any())
+            {
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Task Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model)
+                        {
+                            <tr>
+                                <td class="task-id">#@task.TaskID</td>
+                                <td class="task-name">
+                                    <strong>@task.TaskName</strong>
+                                </td>
+                                <td class="task-description">
+                                    @if (!string.IsNullOrEmpty(task.Description))
+                                    {
+                                        <span title="@task.Description">
+                                            @(task.Description.Length > 50 ? task.Description.Substring(0, 50) + "..." : task.Description)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No description</span>
+                                    }
+                                </td>
+                                <td class="task-status">
+                                    <span class="status-badge status-@task.Status.ToLower()">
+                                        @task.Status
+                                    </span>
+                                </td>
+                                <td class="task-assigned">
+                                    @if (task.AssignedTo.HasValue && task.AssignedVolunteer?.User != null)
+                                    {
+                                        <span>@task.AssignedVolunteer.User.FullName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not assigned</span>
+                                    }
+                                </td>
+                                <td class="task-date">
+                                    @task.CreatedAt.ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="task-actions">
+                                    <button class="action-btn view-btn" title="View Details">
+                                        👁
+                                    </button>
+                                    <button class="action-btn edit-btn" title="Edit Task">
+                                        ✏
+                                    </button>
+                                    <button class="action-btn delete-btn" title="Delete Task">
+                                        🗑
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="no-tasks">
+                    <div class="no-tasks-icon">📋</div>
+                    <h3>No Volunteer Tasks Found</h3>
+                    <p>There are no volunteer tasks in the system yet.</p>
+                    <a href="@Url.Action("VolunteerTask", "Home")" class="action-button">
+                        <span class="button-icon">➕</span>
+                        Create Your First Task
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const viewButtons = document.querySelectorAll('.view-btn');
+        const editButtons = document.querySelectorAll('.edit-btn');
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        viewButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const taskId = this.closest('tr').querySelector('.task-id').textContent;
+                alert('View details for ' + taskId);
+            });
+        });
+
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const taskId = this.closest('tr').querySelector('.task-id').textContent;
+                alert('Edit ' + taskId);
+            });
+        });
+
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const taskId = this.closest('tr').querySelector('.task-id').textContent;
+                if (confirm('Are you sure you want to delete ' + taskId + '?')) {
+                    alert(taskId + ' deleted');
+                }
+            });
+        });
+    });
+</script>

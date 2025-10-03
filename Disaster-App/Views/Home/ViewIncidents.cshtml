@@ -1,0 +1,444 @@
+﻿@model IEnumerable<Disaster_App.Models.Incident>
+
+@{
+    ViewData["Title"] = "View Incidents";
+}
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8fbff;
+    }
+
+    .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(135deg, #004e92, #000428);
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 50, 0.3);
+    }
+
+    .incidents-container {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .incidents-content {
+        width: 100%;
+        max-width: 1500px;
+    }
+
+    .incidents-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .incidents-title {
+        color: #ffffff;
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .incidents-subtitle {
+        color: #e3f2fd;
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-button {
+        background: linear-gradient(135deg, #2196f3, #0d47a1);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        .action-button.secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: #bbdefb;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+            .action-button.secondary:hover {
+                background: rgba(255, 255, 255, 0.25);
+                color: white;
+            }
+
+    /* Stats Section */
+    .stats-section {
+        margin-bottom: 30px;
+    }
+
+    .table-stats {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        flex-wrap: wrap;
+    }
+
+    .stats-item {
+        text-align: center;
+        padding: 15px 25px;
+        background: rgba(13, 71, 161, 0.5);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+
+        .stats-item:hover {
+            transform: translateY(-2px);
+            background: rgba(25, 118, 210, 0.6);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+    .stats-label {
+        display: block;
+        color: #e3f2fd;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stats-value {
+        display: block;
+        color: #ffffff;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .incidents-table-container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+        font-size: 0.95rem;
+    }
+
+        .modern-table th {
+            background: rgba(33, 150, 243, 0.2);
+            color: #90caf9;
+            font-weight: bold;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid rgba(33, 150, 243, 0.3);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modern-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .modern-table tbody tr:hover {
+            background: rgba(33, 150, 243, 0.15);
+        }
+
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .incident-id {
+        font-weight: bold;
+        color: #42a5f5;
+        font-family: 'Courier New', monospace;
+    }
+
+    .description-text,
+    .location-text,
+    .incident-date,
+    .date-time {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .reporter-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: rgba(33, 150, 243, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(33, 150, 243, 0.3);
+    }
+
+    .incident-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .action-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        color: white;
+    }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+    .view-btn:hover {
+        background: rgba(33, 150, 243, 0.3);
+    }
+
+    .edit-btn:hover {
+        background: rgba(0, 172, 193, 0.3);
+    }
+
+    .assign-btn:hover {
+        background: rgba(25, 118, 210, 0.4);
+    }
+
+    .no-incidents {
+        text-align: center;
+        padding: 60px 20px;
+        color: #bbdefb;
+    }
+
+        .no-incidents h3 {
+            color: #64b5f6;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+    .no-incidents-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+</style>
+
+<!-- Background Image Container -->
+<div class="background-container">
+    <div class="background-overlay"></div>
+</div>
+
+<div class="incidents-container">
+    <div class="incidents-content">
+        <div class="incidents-header">
+            <h1 class="incidents-title">Incident Reports</h1>
+            <p class="incidents-subtitle">Current disaster incidents and emergency reports in the system</p>
+
+            <div class="header-actions">
+                <a href="@Url.Action("LogIncident", "Home")" class="action-button">
+                    <span class="button-icon">🚨</span>
+                    Report New Incident
+                </a>
+                <a href="@Url.Action("UserHome", "Home")" class="action-button secondary">
+                    <span class="button-icon">🏠</span>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="stats-section">
+                <div class="table-stats">
+                    <div class="stats-item">
+                        <span class="stats-label">Total Incidents:</span>
+                        <span class="stats-value">@Model.Count()</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Today:</span>
+                        <span class="stats-value">@Model.Count(i => i.DateReported.Date == DateTime.Today)</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">This Week:</span>
+                        <span class="stats-value">@Model.Count(i => i.DateReported >= DateTime.Today.AddDays(-7))</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">This Month:</span>
+                        <span class="stats-value">@Model.Count(i => i.DateReported >= DateTime.Today.AddDays(-30))</span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="incidents-table-container">
+            @if (Model != null && Model.Any())
+            {
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Incident ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Date Reported</th>
+                            <th>Reported By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var incident in Model)
+                        {
+                            <tr>
+                                <td class="incident-id">#@incident.IncidentID</td>
+                                <td class="incident-title">
+                                    <div class="title-content">
+                                        <strong>@incident.Title</strong>
+                                    </div>
+                                </td>
+                                <td class="incident-description">
+                                    @if (!string.IsNullOrEmpty(incident.Description))
+                                    {
+                                        <div class="description-text" title="@incident.Description">
+                                            @(incident.Description.Length > 80 ? incident.Description.Substring(0, 80) + "..." : incident.Description)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No description</span>
+                                    }
+                                </td>
+                                <td class="incident-location">
+                                    <div class="location-info">
+                                        <span class="location-icon">📍</span>
+                                        <span class="location-text">@incident.Location</span>
+                                    </div>
+                                </td>
+                                <td class="incident-date">
+                                    @incident.DateReported.ToString("MMM dd, yyyy")
+                                    <div class="date-time">@incident.DateReported.ToString("hh:mm tt")</div>
+                                </td>
+                                <td class="reported-by">
+                                    <div class="reporter-info">
+                                        <div class="reporter-avatar">
+                                            <span class="avatar-icon">👤</span>
+                                        </div>
+                                        <div class="reporter-details">
+                                            <strong>@incident.ReportedBy</strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="incident-actions">
+                                    <button class="action-btn view-btn" title="View Details" onclick="viewIncident(@incident.IncidentID)">
+                                        👁
+                                    </button>
+                                    <button class="action-btn edit-btn" title="Edit Incident" onclick="editIncident(@incident.IncidentID)">
+                                        ✏
+                                    </button>
+                                    <button class="action-btn assign-btn" title="Assign Resources" onclick="assignResources(@incident.IncidentID)">
+                                        🚑
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="no-incidents">
+                    <div class="no-incidents-icon">🚨</div>
+                    <h3>No Incidents Found</h3>
+                    <p>There are no incident reports in the system yet.</p>
+                    <a href="@Url.Action("LogIncident", "Home")" class="action-button">
+                        <span class="button-icon">🚨</span>
+                        Report First Incident
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function viewIncident(incidentId) {
+        alert('Viewing details for incident #' + incidentId);
+    }
+
+    function editIncident(incidentId) {
+        alert('Editing incident #' + incidentId);
+    }
+
+    function assignResources(incidentId) {
+        alert('Assigning resources to incident #' + incidentId);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const incidentRows = document.querySelectorAll('.modern-table tbody tr');
+
+        incidentRows.forEach(row => {
+            row.addEventListener('mouseenter', function () {
+                this.style.cursor = 'pointer';
+                this.style.transform = 'translateX(5px)';
+            });
+
+            row.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    });
+</script>

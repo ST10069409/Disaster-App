@@ -1,0 +1,332 @@
+﻿@model Disaster_App.Models.Donation
+
+@{
+    ViewData["Title"] = "Make a Donation";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.1/lottie.min.js"></script>
+
+<div class="donation-container">
+    <div class="donation-form">
+        <h1 class="donation-title">Make a Donation</h1>
+        <p class="donation-subtitle">Your support makes a difference in people's lives</p>
+
+        <form asp-action="LogDonation" method="post" class="form">
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h4>Please correct the following:</h4>
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div class="form-section">
+                <h3 class="section-title">Your Information</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="DonorName" class="form-label"></label>
+                        <input asp-for="DonorName" class="form-input" placeholder="Enter your full name" />
+                        <span asp-validation-for="DonorName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-input" placeholder="Enter your email address" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ContactNumber" class="form-label"></label>
+                        <input asp-for="ContactNumber" class="form-input" placeholder="Your phone number" />
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Donation Details</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="ResourceType" class="form-label"></label>
+                        <select asp-for="ResourceType" class="form-input" required>
+                            <option value="">Select resource type</option>
+                            <option value="Food & Water">Food & Water</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Medical Supplies">Medical Supplies</option>
+                            <option value="Shelter Materials">Shelter Materials</option>
+                            <option value="Hygiene Kits">Hygiene Kits</option>
+                            <option value="Blankets">Blankets</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="ResourceType" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Quantity" class="form-label"></label>
+                        <input asp-for="Quantity" type="number" class="form-input" placeholder="Quantity" min="1" value="1" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-textarea" placeholder="Please describe the items you're donating (e.g., 'Canned food', 'Winter clothing', 'First aid kits')" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="PickupAddress" class="form-label"></label>
+                        <textarea asp-for="PickupAddress" class="form-textarea" placeholder="Where can we pick up your donation? (Optional)" rows="2"></textarea>
+                        <span asp-validation-for="PickupAddress" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Submit Donation</button>
+                <a href="@Url.Action("UserHome", "Home")" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var quantityInput = document.querySelector('input[type="number"]');
+        if (!quantityInput.value) {
+            quantityInput.value = 1;
+        }
+    });
+</script>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #0D1B2A; /* Dark blue page background */
+    }
+
+    .donation-container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .donation-form {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 8px 32px rgba(0, 0, 64, 0.5);
+        border: 1px solid rgba(93, 173, 226, 0.4);
+    }
+
+    .donation-title {
+        color: #FFFFFF;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .donation-subtitle {
+        color: #5DADE2;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .form-section {
+        margin-bottom: 40px;
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        border: 1px solid rgba(93, 173, 226, 0.3);
+    }
+
+    .section-title {
+        color: #FFFFFF;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        border-bottom: 2px solid rgba(93, 173, 226, 0.5);
+        padding-bottom: 10px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+        .form-group.full-width {
+            flex: 1 0 100%;
+        }
+
+    .form-label {
+        display: block;
+        color: #FFFFFF;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid rgba(93, 173, 226, 0.5);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #FFFFFF;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+    }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #5DADE2;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
+        }
+
+    select.form-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235DADE2' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 12px;
+        padding-right: 40px;
+    }
+
+        select.form-input option {
+            background-color: #0D1B2A !important;
+            color: #FFFFFF !important;
+            padding: 10px;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .submit-button {
+        background: linear-gradient(135deg, #1E3A8A, #0D1B2A);
+        color: #FFFFFF;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 180px;
+    }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(93, 173, 226, 0.4);
+        }
+
+    .cancel-button {
+        background: rgba(255, 255, 255, 0.05);
+        color: #5DADE2;
+        border: 2px solid rgba(93, 173, 226, 0.4);
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        min-width: 180px;
+    }
+
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+    .text-danger {
+        color: #FF6B6B !important;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .alert-danger {
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid #ff6b6b;
+        color: #ff6b6b;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .submit-button, .cancel-button {
+            min-width: 100%;
+        }
+
+        .donation-form {
+            padding: 30px 20px;
+        }
+
+        .donation-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+

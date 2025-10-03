@@ -1,0 +1,492 @@
+﻿@model IEnumerable<Disaster_App.Models.Volunteer>
+
+@{
+    ViewData["Title"] = "View Volunteers";
+}
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8fbff;
+    }
+
+    .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(to bottom right, #003366, #0066cc);
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 50, 0.4);
+    }
+
+    .volunteers-container {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .volunteers-content {
+        width: 100%;
+        max-width: 1400px;
+    }
+
+    .volunteers-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .volunteers-title {
+        color: #ffffff;
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 50, 0.5);
+    }
+
+    .volunteers-subtitle {
+        color: #e0f0ff;
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-button {
+        background: linear-gradient(135deg, #0066cc, #003366);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.5);
+            text-decoration: none;
+            color: white;
+        }
+
+        .action-button.secondary {
+            background: white;
+            color: #0066cc;
+            border: 2px solid #0066cc;
+        }
+
+            .action-button.secondary:hover {
+                background: #e6f2ff;
+                color: #003366;
+            }
+
+    /* Stats Section */
+    .stats-section {
+        margin-bottom: 30px;
+    }
+
+    .table-stats {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        border: 1px solid #cce0ff;
+        box-shadow: 0 4px 20px rgba(0, 0, 50, 0.1);
+        flex-wrap: wrap;
+    }
+
+    .stats-item {
+        text-align: center;
+        padding: 15px 20px;
+        background: #f0f8ff;
+        border-radius: 10px;
+        border: 1px solid #cce0ff;
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+
+        .stats-item:hover {
+            transform: translateY(-2px);
+            background: #e6f2ff;
+            border-color: #99c2ff;
+        }
+
+    .stats-label {
+        display: block;
+        color: #003366;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stats-value {
+        display: block;
+        color: #0066cc;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .volunteers-table-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 50, 0.2);
+        border: 1px solid #cce0ff;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #003366;
+        font-size: 0.95rem;
+    }
+
+        .modern-table th {
+            background: #e6f2ff;
+            color: #003366;
+            font-weight: bold;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid #cce0ff;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modern-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .modern-table tbody tr:hover {
+            background: #f0f8ff;
+        }
+
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .volunteer-id {
+        font-weight: bold;
+        color: #0066cc;
+        font-family: 'Courier New', monospace;
+    }
+
+    .volunteer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e6f2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #cce0ff;
+    }
+
+    .volunteer-email {
+        color: #004080;
+        font-size: 0.9rem;
+    }
+
+    .skill-tag {
+        background: #e6f2ff;
+        color: #003366;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        border: 1px solid #99c2ff;
+    }
+
+    .availability-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .availability-weekdays {
+        background: #e6f2ff;
+        color: #003366;
+        border: 1px solid #99c2ff;
+    }
+
+    .availability-weekends {
+        background: #d9eaff;
+        color: #004080;
+        border: 1px solid #80b3ff;
+    }
+
+    .availability-flexible {
+        background: #cce5ff;
+        color: #00264d;
+        border: 1px solid #66a3ff;
+    }
+
+    .availability-evenings {
+        background: #b3d9ff;
+        color: #00264d;
+        border: 1px solid #3399ff;
+    }
+
+    .availability-emergency {
+        background: #f2f9ff;
+        color: #001a33;
+        border: 1px solid #80bfff;
+    }
+
+    .availability-oncall {
+        background: #e6f7ff;
+        color: #002b5c;
+        border: 1px solid #66ccff;
+    }
+
+    .status-active {
+        background: #cce5ff;
+        color: #003366;
+        border: 1px solid #80b3ff;
+    }
+
+    .status-available {
+        background: #e6f2ff;
+        color: #004080;
+        border: 1px solid #99c2ff;
+    }
+
+    .no-volunteers {
+        text-align: center;
+        padding: 60px 20px;
+        color: #004080;
+    }
+
+    .no-volunteers-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .no-volunteers h3 {
+        color: #003366;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+    }
+
+    .no-volunteers p {
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+</style>
+
+<!-- Background Image Container -->
+<div class="background-container">
+    <div class="background-overlay"></div>
+</div>
+
+<div class="volunteers-container">
+    <div class="volunteers-content">
+        <div class="volunteers-header">
+            <h1 class="volunteers-title">Our Volunteers</h1>
+            <p class="volunteers-subtitle">Meet the amazing people making a difference in our community</p>
+
+            <div class="header-actions">
+                <a href="@Url.Action("Volunteerss", "Home")" class="action-button">
+                    <span class="button-icon">➕</span>
+                    Register New Volunteer
+                </a>
+                <a href="@Url.Action("VolunteerHome", "Home")" class="action-button secondary">
+                    <span class="button-icon">🏠</span>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="stats-section">
+                <div class="table-stats">
+                    <div class="stats-item">
+                        <span class="stats-label">Total Volunteers:</span>
+                        <span class="stats-value">@Model.Count()</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Active:</span>
+                        <span class="stats-value">@Model.Count(v => v.Tasks?.Any(t => t.Status == "Assigned") == true)</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Available:</span>
+                        <span class="stats-value">@Model.Count(v => !v.Tasks?.Any(t => t.Status == "Assigned") == true)</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Weekdays:</span>
+                        <span class="stats-value">@Model.Count(v => v.Availability == "Weekdays")</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Weekends:</span>
+                        <span class="stats-value">@Model.Count(v => v.Availability == "Weekends")</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Flexible:</span>
+                        <span class="stats-value">@Model.Count(v => v.Availability == "Flexible")</span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="volunteers-table-container">
+            @if (Model != null && Model.Any())
+            {
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Volunteer ID</th>
+                            <th>Volunteer Name</th>
+                            <th>Email</th>
+                            <th>Skills</th>
+                            <th>Availability</th>
+                            <th>Join Date</th>
+                            <th>Assigned Tasks</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var volunteer in Model)
+                        {
+                            <tr>
+                                <td class="volunteer-id">#@volunteer.VolunteerID</td>
+                                <td class="volunteer-name">
+                                    <div class="volunteer-avatar">
+                                        <span class="avatar-icon">👤</span>
+                                    </div>
+                                    <div class="volunteer-info">
+                                        <strong>@volunteer.User?.FullName</strong>
+                                        <span class="volunteer-phone">@volunteer.User?.Phone</span>
+                                    </div>
+                                </td>
+                                <td class="volunteer-email">
+                                    @volunteer.User?.Email
+                                </td>
+                                <td class="volunteer-skills">
+                                    @if (!string.IsNullOrEmpty(volunteer.Skills))
+                                    {
+                                        <div class="skills-tags">
+                                            @foreach (var skill in volunteer.Skills.Split(',').Take(3))
+                                            {
+                                                <span class="skill-tag">@skill.Trim()</span>
+                                            }
+                                            @if (volunteer.Skills.Split(',').Length > 3)
+                                            {
+                                                <span class="skill-tag">+@(volunteer.Skills.Split(',').Length - 3) more</span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No skills specified</span>
+                                    }
+                                </td>
+                                <td class="volunteer-availability">
+                                    <span class="availability-badge availability-@volunteer.Availability?.ToLower().Replace(" ", "")">
+                                        @volunteer.Availability
+                                    </span>
+                                </td>
+                                <td class="volunteer-join-date">
+                                    @volunteer.JoinedAt.ToString("MMM dd, yyyy")
+                                    <div class="join-days">(@((DateTime.Now - volunteer.JoinedAt).Days) days ago)</div>
+                                </td>
+                                <td class="volunteer-tasks">
+                                    <div class="task-stats">
+                                        <span class="task-count">
+                                            @volunteer.Tasks?.Count(t => t.Status == "Assigned" || t.Status == "Completed")
+                                        </span>
+                                        <span class="task-label">tasks</span>
+                                    </div>
+                                </td>
+                                <td class="volunteer-status">
+                                    @{
+                                        var activeTasks = volunteer.Tasks?.Count(t => t.Status == "Assigned") ?? 0;
+                                        var status = activeTasks > 0 ? "Active" : "Available";
+                                        var statusClass = activeTasks > 0 ? "active" : "available";
+                                    }
+                                    <span class="status-badge status-@statusClass">
+                                        @status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="no-volunteers">
+                    <div class="no-volunteers-icon">👥</div>
+                    <h3>No Volunteers Found</h3>
+                    <p>There are no registered volunteers in the system yet.</p>
+                    <a href="@Url.Action("Volunteerss", "Home")" class="action-button">
+                        <span class="button-icon">➕</span>
+                        Register First Volunteer
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const volunteerRows = document.querySelectorAll('.modern-table tbody tr');
+
+        volunteerRows.forEach(row => {
+            row.addEventListener('click', function() {
+                const volunteerId = this.querySelector('.volunteer-id').textContent;
+                const volunteerName = this.querySelector('.volunteer-name strong').textContent;
+
+                alert('View details for: ' + volunteerName + ' ' + volunteerId);
+            });
+
+            row.addEventListener('mouseenter', function() {
+                this.style.cursor = 'pointer';
+                this.style.transform = 'translateX(5px)';
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    });
+</script>

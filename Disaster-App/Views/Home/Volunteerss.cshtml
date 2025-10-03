@@ -1,0 +1,377 @@
+﻿@model Disaster_App.Models.Volunteer
+
+@{
+    ViewData["Title"] = "Volunteers";
+}
+
+<div class="volunteer-container">
+    <div class="volunteer-form">
+        <h1 class="volunteer-title">Join Our Volunteer Team</h1>
+        <p class="volunteer-subtitle">Make a difference in your community by volunteering your time and skills</p>
+
+        <form asp-action="Volunteerss" class="form">
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h4>Please fix the following errors:</h4>
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-section">
+                <h3 class="section-title">Your Skills & Expertise</h3>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="Skills" class="form-label">Skills & Qualifications *</label>
+                        <textarea asp-for="Skills" class="form-textarea" placeholder="Please list your relevant skills, qualifications, or areas of expertise (e.g., First Aid, Construction, Medical, Counseling, Logistics, etc.)" rows="4"></textarea>
+                        <span asp-validation-for="Skills" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">Availability</h3>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label asp-for="Availability" class="form-label">When Are You Available? *</label>
+                        <select asp-for="Availability" class="form-input" required>
+                            <option value="">Select your availability</option>
+                            <option value="Weekdays">Weekdays Only</option>
+                            <option value="Weekends">Weekends Only</option>
+                            <option value="Evenings">Evenings Only</option>
+                            <option value="Flexible">Flexible - Any Time</option>
+                            <option value="Emergency">Emergency Response Only</option>
+                            <option value="OnCall">On-Call Basis</option>
+                        </select>
+                        <span asp-validation-for="Availability" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" asp-for="UserID" />
+            <input type="hidden" asp-for="JoinedAt" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+
+            <div class="form-note">
+                <p>💡 <strong>Note:</strong> By registering as a volunteer, you agree to be contacted for disaster relief efforts based on your skills and availability.</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Join as Volunteer</button>
+                <a href="@Url.Action("VolunteerHome", "Home")" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const skillsInput = document.getElementById('Skills');
+        const availabilitySelect = document.getElementById('Availability');
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            if (!skillsInput.value.trim()) {
+                isValid = false;
+                skillsInput.style.borderColor = '#2563eb';
+                skillsInput.style.backgroundColor = 'rgba(37, 99, 235, 0.05)';
+                showError(skillsInput, 'Please describe your skills and qualifications');
+            } else {
+                skillsInput.style.borderColor = 'rgba(37, 99, 235, 0.3)';
+                skillsInput.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                hideError(skillsInput);
+            }
+
+            if (!availabilitySelect.value) {
+                isValid = false;
+                availabilitySelect.style.borderColor = '#2563eb';
+                availabilitySelect.style.backgroundColor = 'rgba(37, 99, 235, 0.05)';
+                showError(availabilitySelect, 'Please select your availability');
+            } else {
+                availabilitySelect.style.borderColor = 'rgba(37, 99, 235, 0.3)';
+                availabilitySelect.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                hideError(availabilitySelect);
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                document.querySelector('.alert-danger')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        });
+
+        skillsInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.style.borderColor = 'rgba(37, 99, 235, 0.3)';
+                this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                hideError(this);
+            }
+        });
+
+        availabilitySelect.addEventListener('change', function() {
+            if (this.value) {
+                this.style.borderColor = 'rgba(37, 99, 235, 0.3)';
+                this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                hideError(this);
+            }
+        });
+    });
+
+    function showError(element, message) {
+        hideError(element);
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.style.color = '#ef4444';
+        errorElement.style.fontSize = '0.8rem';
+        errorElement.style.marginTop = '5px';
+        errorElement.textContent = message;
+        element.parentNode.appendChild(errorElement);
+    }
+
+    function hideError(element) {
+        const existingError = element.parentNode.querySelector('.field-error');
+        if (existingError) {
+            existingError.remove();
+        }
+    }
+</script>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f6ff;
+    }
+
+    .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #1e3a8a 0%, #3b82f6 100%);
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .volunteer-container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .volunteer-form {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 700px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e7ff;
+    }
+
+    .volunteer-title {
+        color: #1e3a8a;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .volunteer-subtitle {
+        color: #3b82f6;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+        padding: 25px;
+        background: #f9fbff;
+        border-radius: 15px;
+        border: 1px solid #e0e7ff;
+    }
+
+    .section-title {
+        color: #1e40af;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3b82f6;
+        padding-bottom: 10px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+        flex: 1 0 100%;
+    }
+
+    .form-label {
+        display: block;
+        color: #1e40af;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid rgba(37, 99, 235, 0.3);
+        border-radius: 12px;
+        background: white;
+        color: #1e3a8a;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    select.form-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232563eb' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 12px;
+        padding-right: 40px;
+    }
+
+    .form-note {
+        background: rgba(37, 99, 235, 0.05);
+        border: 1px solid rgba(37, 99, 235, 0.3);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 25px 0;
+        color: #1e3a8a;
+        font-size: 0.9rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .submit-button {
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 200px;
+    }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+    .cancel-button {
+        background: white;
+        color: #1e3a8a;
+        border: 2px solid #3b82f6;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        min-width: 200px;
+    }
+
+        .cancel-button:hover {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+    .text-danger, .field-error {
+        color: #ef4444 !important;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid #ef4444;
+        color: #ef4444;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .submit-button, .cancel-button {
+            min-width: 100%;
+        }
+    }
+</style>
+
+<div class="background-container">
+    <div class="background-overlay"></div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,308 @@
+﻿Here's the restyled code with a dark blue and white color scheme, maintaining the original code's integrity:
+
+
+@model Disaster_App.Models.Incident
+
+@{
+    ViewData["Title"] = "Report Incident";
+}
+
+<!-- Include Lottie Web library -->
+<script src=""></script>
+
+<div class="incident-container">
+    <div class="incident-form">
+        <h1 class="incident-title">Report New Incident</h1>
+        <p class="incident-subtitle">Help us respond quickly by providing accurate information</p>
+
+        <form asp-action="LogIncident" class="form">
+            @Html.AntiForgeryToken()
+
+            <!-- Debugging: Show Model State Errors -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h4>Validation Errors:</h4>
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label">Incident Title *</label>
+                    <input asp-for="Title" class="form-input" placeholder="e.g., Flooding in Downtown Area" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Location" class="form-label">Location *</label>
+                    <input asp-for="Location" class="form-input" placeholder="e.g., 123 Main Street, City" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label asp-for="Description" class="form-label">Incident Description *</label>
+                    <textarea asp-for="Description" class="form-textarea" placeholder="Please provide detailed information about the incident, including severity, affected areas, and immediate needs..." rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Report Incident</button>
+                <a href="@Url.Action("UserHome", "Home")" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #1A1D23;
+    }
+
+    .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image: url('/images/flat-mountains.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(26, 29, 35, 0.7);
+    }
+
+    .incident-container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .incident-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .incident-title {
+        color: #FFFFFF;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .incident-subtitle {
+        color: #87CEEB;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+        .form-group.full-width {
+            flex: 1 0 100%;
+        }
+
+    .form-label {
+        display: block;
+        color: #FFFFFF;
+        font-weight: bold;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid rgba(93, 173, 226, 0.3);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #FFFFFF;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #5DADE2;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .submit-button {
+        background: linear-gradient(135deg, #3498DB, #2E4053);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 180px;
+    }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+    .cancel-button {
+        background: rgba(255, 255, 255, 0.1);
+        color: #87CEEB;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        min-width: 180px;
+    }
+
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+    .text-danger {
+        color: #ff6b6b !important;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .alert-danger {
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid #ff6b6b;
+        color: #ff6b6b;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+        .alert-danger h4 {
+            margin: 0 0 10px 0;
+            color: #ff6b6b;
+        }
+
+        .alert-danger ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .submit-button, .cancel-button {
+            min-width: 100%;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .incident-form {
+            padding: 30px 20px;
+            margin: 10px;
+        }
+
+        .incident-title {
+            font-size: 2rem;
+        }
+
+        .incident-subtitle {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<!-- Background Image Container -->
+<div class="background-container">
+    <div class="background-overlay"></div>
+</
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+    }
