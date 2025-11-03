@@ -39,7 +39,7 @@
         width: 100%;
         height: 100%;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #EAF2FB; /* light blue background */
+        background-color: #0D1B2A; /* Consistent dark blue background */
     }
 
     .login-container {
@@ -53,18 +53,18 @@
     }
 
     .login-form {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(12px);
         border-radius: 20px;
         padding: 40px;
         width: 100%;
         max-width: 450px;
-        box-shadow: 0 8px 32px rgba(0, 85, 179, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(93, 173, 226, 0.3);
     }
 
     .login-title {
-        color: #1E3A8A; /* dark blue */
+        color: #FFFFFF; /* Consistent white */
         font-size: 2.5rem;
         font-weight: bold;
         text-align: center;
@@ -72,7 +72,7 @@
     }
 
     .login-subtitle {
-        color: #5DADE2; /* lighter blue */
+        color: #5DADE2; /* Consistent light blue */
         text-align: center;
         margin-bottom: 30px;
         font-size: 1.1rem;
@@ -84,7 +84,7 @@
 
     .form-label {
         display: block;
-        color: #1E3A8A;
+        color: #FFFFFF; /* Consistent white */
         font-weight: bold;
         margin-bottom: 8px;
         font-size: 0.9rem;
@@ -95,8 +95,8 @@
         padding: 15px;
         border: 2px solid rgba(93, 173, 226, 0.5);
         border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        color: #1E3A8A;
+        background: rgba(255, 255, 255, 0.05); /* Consistent with other forms */
+        color: #FFFFFF; /* Consistent white text */
         font-size: 1rem;
         transition: all 0.3s ease;
     }
@@ -104,12 +104,12 @@
         .form-input:focus {
             outline: none;
             border-color: #5DADE2;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
         }
 
         .form-input::placeholder {
-            color: rgba(30, 58, 138, 0.5);
+            color: rgba(255, 255, 255, 0.6); /* Consistent placeholder */
         }
 
     .login-button {
@@ -135,20 +135,20 @@
         text-align: center;
     }
 
-        .register-link p {
-            color: #5DADE2;
-            margin: 0;
-        }
+    .register-link p {
+        color: #5DADE2;
+        margin: 0;
+    }
 
     .register-link-text {
-        color: #1E3A8A;
+        color: #5DADE2; /* Consistent light blue */
         text-decoration: none;
         font-weight: bold;
         transition: color 0.3s ease;
     }
 
         .register-link-text:hover {
-            color: #1AC782;
+            color: #FFFFFF; /* White on hover */
         }
 
     /* Responsive design */

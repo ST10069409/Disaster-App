@@ -82,7 +82,7 @@
         height: 100%;
         overflow: auto;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #0B1A39; /* Dark blue background */
+        background-color: #0D1B2A; /* Consistent dark blue background */
     }
 
     .register-container {
@@ -95,13 +95,14 @@
     }
 
     .register-form {
-        background: #112B54; /* Darker blue card */
+        background: rgba(255, 255, 255, 0.05); /* Consistent translucent card */
+        backdrop-filter: blur(12px);
         border-radius: 20px;
         padding: 40px;
         width: 100%;
         max-width: 500px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(93, 173, 226, 0.3); /* Consistent border */
     }
 
     .register-title {
@@ -143,7 +144,7 @@
         padding: 15px;
         border: 2px solid rgba(255, 255, 255, 0.3);
         border-radius: 12px;
-        background: #0B1A39;
+        background: rgba(255, 255, 255, 0.05); /* Consistent translucent */
         color: #ffffff;
         font-size: 1rem;
         transition: all 0.3s ease;
@@ -153,7 +154,7 @@
         .form-input:focus {
             outline: none;
             border-color: #5DADE2;
-            background: #173664;
+            background: rgba(255, 255, 255, 0.1); /* Consistent focus background */
             box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
         }
 
@@ -162,7 +163,7 @@
         }
 
     select.form-input option {
-        background-color: #0B1A39 !important;
+        background-color: #0D1B2A !important; /* Consistent background */
         color: white !important;
     }
 
